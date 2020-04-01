@@ -32,15 +32,20 @@ options(noaakey = .NOAA_token)
 # 
 # climate_by_station <- ncdc(datasetid='GHCND', startdate = '2020-01-01', enddate = '2020-03-20', add_units = TRUE)
 # 
-# location <- ncdc_locs(locationcategoryid='CITY', sortfield='name', sortorder='desc')
+loc <- ncdc_locs_cats(datasetid = "GHCND")
+
+location <- ncdc_locs(locationcategoryid='CNTRY', sortfield='name', sortorder='desc')
 # 
 # climate_by_station <- climate_by_station$data
 # 
 # location <- ncdc_locs(datasetid='GHCND', limit = 500)
 
-station <- ncdc_stations(datasetid = "GHCND", limit = 1000)
+station <- ncdc_stations(datasetid = "GHCND", limit = 1000, locationid='FIPS:US')
 
-out <- ncdc(datasetid='GHCND', datatypeid = "TAVG", stationid = "GHCND:USW00014895",
-            startdate = '2020-01-01', enddate = '2020-03-20', add_units = TRUE, limit = 1000)
+out <- ncdc(datasetid='GHCND', datatypeid = "TAVG", locationid = "FIPS:US",
+            startdate = '2020-01-01', enddate = '2020-03-20', add_units = TRUE, limit = 25)
+
+
+
 
 
