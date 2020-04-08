@@ -1,8 +1,9 @@
 
 
-fire <- fire_data@data
+library(tidyverse)
+library(magrittr)
 
-fire$fpa_id %<>% as.character()
+fire <- read_rds("data/data.RDS")
 
 Explore <- function(df, group, order = TRUE, top = NULL){
   df %<>% 
@@ -31,23 +32,11 @@ Explore <- function(df, group, order = TRUE, top = NULL){
          title = paste("Histogram of", group))
 }
 
-
-theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .4))
-
-
-
-
-Explore(fire, "source_system_type")
-Explore(fire, "source_system") + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .4))
-Explore(fire, "nwcg_reporting_unit_name", top = 20) + coord_flip()
-Explore(fire, "source_reporting_unit_name", top = 20) + coord_flip()
-Explore(fire, "stat_cause_descr")
+Explore(fire, "stat_cause_descr") + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .4))
 Explore(fire, "discovery_doy", order = FALSE)
-Explore(fire, "discovery_time", order = FALSE)
 Explore(fire, "fire_size_class")
-Explore(fire, "owner_descr") + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .4))
-Explore(fire, "state") + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .4))
 Explore(fire, "fire_year", order = FALSE)
+Explore(fire, "discovery_time_num", order = FALSE)
 
 
 fire$discovery_date %<>% as.Date()
@@ -61,5 +50,45 @@ ggplot(time, aes(x = discovery_date, y = n)) +
   theme_minimal() + 
   labs(y = "count fire")
 
+
+#### fire duration vs date ---- 
+
+duration <- fire %>%
+  filter(fire_year == 2005) %>% 
+  group_by(discovery_date) %>% 
+  summarise(avg_duration = mean(fire_duration))
+
+ggplot(duration, aes(x = discovery_date, y = avg_duration)) + 
+  geom_line() + 
+  theme_minimal()
+
+#### fire duration vs temp ----
+
+temp_min <- fire %>%
+  filter(fire_year == 2005) %>% 
+  group_by(discovery_min_temp) %>% 
+  summarise(avg_duration = mean(fire_duration))
+
+
+ggplot(temp_min, aes(x = discovery_min_temp, y = avg_duration)) + 
+  geom_line()
+
+temp_max <- fire %>%
+  filter(fire_year == 2005) %>% 
+  group_by(discovery_max_temp) %>% 
+  summarise(avg_duration = mean(fire_duration))
+
+
+ggplot(temp_max, aes(x = discovery_max_temp, y = avg_duration)) + 
+  geom_line()
+
+prec <- fire %>%
+  filter(fire_year == 2005) %>% 
+  group_by(discovery_prec) %>% 
+  summarise(avg_duration = mean(fire_duration))
+
+
+ggplot(prec, aes(x = discovery_prec, y = avg_duration)) + 
+  geom_line()
 
 
