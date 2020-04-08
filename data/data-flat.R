@@ -88,28 +88,33 @@ data %<>%
   mutate(fire_volume = fire_size * fire_duration)
 
 
+#### save data ---- 
+
+write_rds(data, "data/data.RDS")
+
+
 #### group by ---- 
 
-data_group <- data %>% 
-  group_by(discovery_date,  
-           county_fyp) %>% 
-  summarise(discovery_min_temp = mean(discovery_min_temp), 
-            discovery_max_temp = mean(discovery_max_temp), 
-            discovery_prec = mean(discovery_prec), 
-            cont_min_temp = mean(cont_min_temp), 
-            cont_max_temp = mean(cont_max_temp), 
-            cont_prec = mean(cont_prec), 
-            fire_volume = mean(fire_volume), 
-            fire_freq = n())
+# data_group <- data %>% 
+#   group_by(discovery_date,  
+#            county_fyp) %>% 
+#   summarise(discovery_min_temp = mean(discovery_min_temp), 
+#             discovery_max_temp = mean(discovery_max_temp), 
+#             discovery_prec = mean(discovery_prec), 
+#             cont_min_temp = mean(cont_min_temp), 
+#             cont_max_temp = mean(cont_max_temp), 
+#             cont_prec = mean(cont_prec), 
+#             fire_volume = mean(fire_volume), 
+#             fire_freq = n())
 
 
 #### spatial object ---- 
 
-coordinates(data) <- c("lon", "lat")
-
-proj4string(data) <- CRS("+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0")
-
-plot(data)
+# coordinates(data) <- c("lon", "lat")
+# 
+# proj4string(data) <- CRS("+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0")
+# 
+# plot(data)
 
 
 
