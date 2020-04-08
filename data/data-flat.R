@@ -57,6 +57,8 @@ data <- CA_fire %>%
 
 #### compute time ---- 
 
+data$discovery_time_num <- data$discovery_time
+
 data$discovery_time %<>% sprintf("%04d", .)
 
 data$cont_time %<>% sprintf("%04d", .)
