@@ -47,7 +47,7 @@ data <- CA_fire %>%
          lat = y, 
          lon = x, 
          state, 
-         county_fyp = COUNTYFYP, 
+         COUNTYFP = COUNTYFYP, 
          discovery_min_temp, 
          discovery_max_temp, 
          discovery_prec, 
