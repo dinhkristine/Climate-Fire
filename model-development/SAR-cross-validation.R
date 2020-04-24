@@ -42,7 +42,7 @@ CA <- counties(state = "CA", resolution = "5m")
 CA <- CA[CA$COUNTYFP %in% intersect(fire$COUNTYFP, CA$COUNTYFP), ]
 
 CA$fire_volume <- sapply(as.character(unique(fire$COUNTYFP)), function(x){
-  sum(fire$fire_volume[fire$COUNTYFP == x], na.rm = T)
+    sum(fire$fire_volume[fire$COUNTYFP == x], na.rm = T)
 })
 
 CA$discovery_max_temp <- sapply(as.character(unique(fire$COUNTYFP)), function(x){
@@ -55,11 +55,11 @@ plot(CA)
 
 plot(nb_CA, coordinates(CA), add = T)
 
-listW <- nb2listw(nb_CA, style = "B")
+listW <- nb2listw(nb_CA, style = "B", zero.policy = T)
 
 W <- listw2mat(listW)
 
 SAR_fire <- spautolm(fire_volume ~ discovery_max_temp, 
-                     data = CA, 
+                     data = CA,
                      listw = listW, family = "SAR")
 

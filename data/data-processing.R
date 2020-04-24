@@ -18,7 +18,7 @@ max_year <- 2015
 
 #### load CA tracts with countries ---- 
 
-CA_tracts <- tracts(state = "CA")
+CA_tracts <-  counties(state = "CA", resolution = "5m")
 
 
 #### Load fire data ---- 
@@ -100,7 +100,7 @@ min@data$COUNTYFYP %<>% as.character()
 
 CA_min_temp <- min@data %>% 
   group_by(date, COUNTYFYP) %>% 
-  summarise(avg_min_temp = mean(temp))
+  summarise(avg_min_temp = median(temp))
 
 
 #### Load MAX temp data ---- 
@@ -148,7 +148,7 @@ max@data$COUNTYFYP %<>% as.character()
 
 CA_max_temp <- max@data %>% 
   group_by(date, COUNTYFYP) %>% 
-  summarise(avg_max_temp = mean(temp))
+  summarise(avg_max_temp = median(temp))
 
 
 #### Load prec temp data ---- 
@@ -196,7 +196,7 @@ prec@data$COUNTYFYP %<>% as.character()
 
 CA_prec_temp <- prec@data %>% 
   group_by(date, COUNTYFYP) %>% 
-  summarise(avg_prec = mean(temp))
+  summarise(avg_prec = median(temp))
 
 
 #### Join all Temp and Prec data ---- 

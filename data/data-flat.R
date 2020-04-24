@@ -80,6 +80,8 @@ data$fire_duration <- time_length(difftime(data$cont_datetime, data$discovery_da
 
 #### filter ----- 
 
+data$fire_duration[data$fire_duration < 0] <- 0
+
 data %<>% 
   filter(fire_duration >= 15 & !is.na(discovery_max_temp))
 
