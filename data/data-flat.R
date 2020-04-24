@@ -4,6 +4,7 @@ library(tidyverse)
 library(magrittr)
 library(lubridate)
 library(sp)
+library(zoo)
 
 ## load climate and fire data ---- 
 
@@ -14,11 +15,12 @@ CA_temp <- read_rds("data/temp/CA_temp.RDS")
 ## prepare temp data ---- 
 ## edit column to merge in with fire data discovery date 
 
-colnames(CA_temp) <- c("discovery_date", "COUNTYFYP", "discovery_min_temp", "discovery_max_temp", "discovery_prec")
+colnames(CA_temp) <- c("discovery_date", "COUNTYFYP", "discovery_min_temp", 
+                       "discovery_max_temp", "discovery_prec")
 
 ## join with fire data 
 
-CA_fire %<>% left_join(CA_temp)
+CA_fire %<>% left_join(CA_temp, by = c("discovery_date", "COUNTYFYP"))
 
 ## edit column to merge in with fire data cont date 
 
@@ -26,7 +28,7 @@ colnames(CA_temp) <- c("cont_date", "COUNTYFYP", "cont_min_temp", "cont_max_temp
 
 ## join with fire data 
 
-CA_fire %<>% left_join(CA_temp)
+CA_fire %<>% left_join(CA_temp, , by = c("cont_date", "COUNTYFYP"))
 
 
 #### select columns ---- 
@@ -57,39 +59,53 @@ data <- CA_fire %>%
 
 #### compute time ---- 
 
-data$discovery_time_num <- data$discovery_time
+# data$discovery_time_num <- data$discovery_time
+# 
+# data$discovery_time %<>% sprintf("%04d", .)
+# 
+# data$cont_time %<>% sprintf("%04d", .)
+# 
+# data$discovery_time %<>% 
+#   strptime(., "%H%M") %>% 
+#   strftime(., "%H:%M:%S")
+# 
+# data$cont_time %<>% 
+#   strptime(., "%H%M") %>% 
+#   strftime(., "%H:%M:%S")
+# 
+# data$discovery_datetime <- as_datetime(paste(data$discovery_date, data$discovery_time))
+# 
+# data$cont_datetime <- as_datetime(paste(data$cont_date, data$cont_time))
+# 
+# data$fire_duration <- time_length(difftime(data$cont_datetime, data$discovery_datetime), "minutes")
 
-data$discovery_time %<>% sprintf("%04d", .)
+data %<>% 
+  mutate(fire_month = month(discovery_date))  
 
-data$cont_time %<>% sprintf("%04d", .)
-
-data$discovery_time %<>% 
-  strptime(., "%H%M") %>% 
-  strftime(., "%H:%M:%S")
-
-data$cont_time %<>% 
-  strptime(., "%H%M") %>% 
-  strftime(., "%H:%M:%S")
-
-data$discovery_datetime <- as_datetime(paste(data$discovery_date, data$discovery_time))
-
-data$cont_datetime <- as_datetime(paste(data$cont_date, data$cont_time))
-
-data$fire_duration <- time_length(difftime(data$cont_datetime, data$discovery_datetime), "minutes")
+data %<>% 
+  select(objectid,
+         fire_year, 
+         fire_month, 
+         lat, 
+         lon, 
+         COUNTYFP, 
+         min_temp = discovery_min_temp, 
+         max_temp = discovery_max_temp, 
+         prec = discovery_prec)
 
 
 #### filter ----- 
 
-data$fire_duration[data$fire_duration < 0] <- 0
-
-data %<>% 
-  filter(fire_duration >= 15 & !is.na(discovery_max_temp))
+# data$fire_duration[data$fire_duration < 0] <- 0
+# 
+# data %<>% 
+#   filter(fire_duration >= 15 & !is.na(discovery_max_temp))
 
 
 #### feature enginner ---- 
 
-data %<>% 
-  mutate(fire_volume = fire_size * fire_duration)
+# data %<>% 
+#   mutate(fire_volume = fire_size * fire_duration)
 
 
 #### save data ---- 
