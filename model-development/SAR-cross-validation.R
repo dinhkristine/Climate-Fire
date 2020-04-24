@@ -7,6 +7,7 @@ library(sp)
 library(tigris)
 library(spdep)
 library(spatialreg)
+library(spacetime)
 
 
 fire <- read_rds("data/data.RDS")
@@ -23,26 +24,55 @@ CA <- counties(state = "CA", resolution = "5m")
 # 
 # CA_fire %<>% modify_at(c("INTPTLON", "INTPTLAT"), as.numeric)
 # 
-# coordinates(fire) <- c("lon", "lat")
+coordinates(fire) <- c("lon", "lat")
+
+proj4string(fire) <- CA@proj4string
+
+fire_new <- over(fire, CA)
 # 
-# proj4string(fire) <- CA@proj4string
+# fire@data$lat <- fire_new$INTPTLAT
 # 
-# fire_new <- over(CA, fire)
+# fire@data$lon <- fire_new$INTPTLON
+
+fire@data %<>% left_join(fire_new %>% select(COUNTYFP, INTPTLAT, INTPTLON) %>% distinct)
+
+
+fire@data %<>% 
+  group_by(fire_month, COUNTYFP, lat = INTPTLAT, lon = INTPTLON) %>% 
+  summarise(fire_freq = length(unique(objectid)), 
+            min_temp = median(min_temp, na.rm = TRUE), 
+            max_temp = median(max_temp, na.rm = TRUE), 
+            prec = median(prec, na.rm = TRUE))
+
+fire <- fire@data %>% as.data.frame()
+
+
+
+
+write_rds(fire, "data/data_new.RDS")
+
 # 
 # fire@data
 
+fire$lat %<>% as.numeric()
+fire$lon %<>% as.numeric()
 
+coordinates(fire) <- c("lon", "lat")
 
+proj4string(fire) <- CA@proj4string
 
+fire <- sapply(CA@polygons, function(x) x@area)
 
 # u <- union(fire$COUNTYFP, CA$COUNTYFP)
 
 # CA@data %<>% filter(COUNTYFP %in% c(intersect(fire$COUNTYFP, CA$COUNTYFP)))
 
-CA <- CA[CA$COUNTYFP %in% intersect(fire$COUNTYFP, CA$COUNTYFP), ]
+# CA <- CA[CA$COUNTYFP %in% intersect(fire$COUNTYFP, CA$COUNTYFP), ]
 
-CA$fire_volume <- sapply(as.character(unique(fire$COUNTYFP)), function(x){
-    sum(fire$fire_volume[fire$COUNTYFP == x], na.rm = T)
+CA$min_temp <- sapply(as.character(unique(fire$COUNTYFP)), function(x){
+  for (i in 2000:2015){
+    median(fire$min_temp[fire$COUNTYFP == x & fire$fire_year == i], na.rm = T)
+  }  
 })
 
 CA$discovery_max_temp <- sapply(as.character(unique(fire$COUNTYFP)), function(x){
