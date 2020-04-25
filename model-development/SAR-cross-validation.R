@@ -38,7 +38,7 @@ fire@data %<>% left_join(fire_new %>% select(COUNTYFP, INTPTLAT, INTPTLON) %>% d
 
 
 fire@data %<>% 
-  group_by(fire_month, COUNTYFP, lat = INTPTLAT, lon = INTPTLON) %>% 
+  group_by(fire_year, fire_month, COUNTYFP, lat = INTPTLAT, lon = INTPTLON) %>% 
   summarise(fire_freq = length(unique(objectid)), 
             min_temp = median(min_temp, na.rm = TRUE), 
             max_temp = median(max_temp, na.rm = TRUE), 
