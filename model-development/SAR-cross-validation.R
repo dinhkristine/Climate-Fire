@@ -61,7 +61,7 @@ coordinates(fire) <- c("lon", "lat")
 
 proj4string(fire) <- CA@proj4string
 
-fire <- sapply(CA@polygons, function(x) x@area)
+# fire <- sapply(CA@polygons, function(x) x@area)
 
 # u <- union(fire$COUNTYFP, CA$COUNTYFP)
 
@@ -69,12 +69,14 @@ fire <- sapply(CA@polygons, function(x) x@area)
 
 # CA <- CA[CA$COUNTYFP %in% intersect(fire$COUNTYFP, CA$COUNTYFP), ]
 
+# fire@data %<>% filter(fire_month == 1 & fire_year == 2010)
+
 CA$min_temp <- sapply(as.character(unique(fire$COUNTYFP)), function(x){
   for (i in 2000:2015){
     median(fire$min_temp[fire$COUNTYFP == x & fire$fire_year == i], na.rm = T)
-  }  
+  }
 })
-
+# 
 CA$discovery_max_temp <- sapply(as.character(unique(fire$COUNTYFP)), function(x){
   median(fire$discovery_max_temp[fire$COUNTYFP == x], na.rm = T)
 })
@@ -85,11 +87,11 @@ plot(CA)
 
 plot(nb_CA, coordinates(CA), add = T)
 
-listW <- nb2listw(nb_CA, style = "B", zero.policy = T)
+listW <- nb2listw(nb_CA, style = "B")
 
 W <- listw2mat(listW)
 
-SAR_fire <- spautolm(fire_volume ~ discovery_max_temp, 
-                     data = CA,
+SAR_fire <- spautolm(fire_freq ~ max_temp, 
+                     data = fire,
                      listw = listW, family = "SAR")
 
