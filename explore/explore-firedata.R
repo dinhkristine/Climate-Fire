@@ -51,6 +51,8 @@ ggplot(time, aes(x = discovery_date, y = n)) +
   labs(y = "count fire")
 
 
+
+
 #### fire duration vs date ---- 
 
 duration <- fire %>%
@@ -90,5 +92,8 @@ prec <- fire %>%
 
 ggplot(prec, aes(x = discovery_prec, y = avg_duration)) + 
   geom_line()
+
+
+
 
 

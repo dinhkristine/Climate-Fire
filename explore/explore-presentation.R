@@ -89,6 +89,20 @@ ggplot(fire_month, aes(x = factor(fire_month), y = fire_freq, group = 1)) +
        title = "Fire Frequency by Month") + 
   scale_y_continuous(labels = scales::comma)
 
+fire_prec_month <- fire %>% 
+  group_by(fire_month) %>% 
+  summarise(prec = mean(prec, na.rm = TRUE))
+
+ggplot(fire_prec_month, aes(x = factor(fire_month), y = prec, group = 1)) + 
+  geom_point(size = 2, color= color) + 
+  geom_line(size = 1, color = color) + 
+  theme_minimal() + 
+  labs(x = "Fire Month", 
+       y = "Precipitation", 
+       title = "Precipitation by Month") + 
+  scale_y_continuous(labels = scales::comma)
+
+
 
 fire_year <- fire %>% 
   group_by(fire_year) %>% 
