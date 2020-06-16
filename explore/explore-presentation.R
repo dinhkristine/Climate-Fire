@@ -26,7 +26,7 @@ ggplot(fire, aes(x = fire_year)) +
        x = "Fire Year")
 
 fire_group <- fire %>% 
-  group_by(COUNTYFP, lon, lat) %>% 
+  group_by(COUNTYFP, lon, lat) %>%  
   summarise(fire_freq = sum(fire_freq))
 
 coordinates(fire_group) <- c("lon", "lat")
